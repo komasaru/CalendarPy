@@ -24,8 +24,8 @@ class JplDb:
     SEKKU        = ["人日", "上巳", "端午", "七夕", "重陽"]
     DATABASE     = "calendar"
     HOSTNAME     = "127.0.0.1"
-    USERNAME     = "******"
-    PASSWORD     = "**********"
+    USERNAME     = "masaru"
+    PASSWORD     = "MkMk*/7621"
     REG          = False  # DB 登録も行う場合は True
 
     def __init__(self):

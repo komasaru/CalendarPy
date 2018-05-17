@@ -4,6 +4,7 @@
 
   date          name            version
   2018.05.06    mk-mode.com     1.00 新規作成
+  2018.05.17    mk-mode.com     1.01 各休日に有効開始／終了年を設定
 
 Copyright(C) 2018 mk-mode.com All Rights Reserved.
 ---
@@ -14,36 +15,17 @@ import MySQLdb
 import sys
 import traceback
 import time
+from lib import const as lcst
 
 
 class JplHoliday:
     Y_MIN, Y_MAX = 1900, 2099  #0, 9999
     USAGE        = "[USAGE] ./jpl_holiday.py [YYYY [YYYY]]"
-    HOLIDAYS = [
-        [ 0,  1,  1, 0, "元日"        ],
-        [ 1,  1,  0, 2, "成人の日"    ],
-        [ 2,  2, 11, 0, "建国記念の日"],
-        [ 3,  3,  0, 4, "春分の日"    ],
-        [ 4,  4, 29, 0, "昭和の日"    ],
-        [ 5,  5,  3, 0, "憲法記念日"  ],
-        [ 6,  5,  4, 0, "みどりの日"  ],
-        [ 7,  5,  5, 0, "こどもの日"  ],
-        [ 8,  7,  0, 3, "海の日"      ],
-        [ 9,  8, 11, 0, "山の日"      ],
-        [10,  9,  0, 3, "敬老の日"    ],
-        [11,  9,  0, 4, "秋分の日"    ],
-        [12, 10,  0, 2, "体育の日"    ],
-        [13, 11,  3, 0, "文化の日"    ],
-        [14, 11, 23, 0, "勤労感謝の日"],
-        [15, 12, 23, 0, "天皇誕生日"  ],
-        [90,  0,  0, 8, "国民の休日"  ],
-        [91,  0,  0, 9, "振替休日"    ]
-    ]
     JST_D        = 0.375
     DATABASE     = "calendar"
     HOSTNAME     = "127.0.0.1"
-    USERNAME     = "******"
-    PASSWORD     = "**********"
+    USERNAME     = "masaru"
+    PASSWORD     = "MkMk*/7621"
     REG          = False  # DB 登録も行う場合は True
 
     def __init__(self):
@@ -60,6 +42,8 @@ class JplHoliday:
         try:
             for year in range(self.year_s, self.year_e + 1):
                 print("*", year)
+                if year < 1948:
+                    continue
                 # 変動の祝日の日付･曜日を計算 ( 振替休日,国民の休日を除く )
                 holiday_0 = self.__comp_holiday_0(year)
                 # 国民の休日計算
@@ -95,15 +79,16 @@ class JplHoliday:
             raise
 
     def __comp_holiday_0(self, year):
-        """ 変動の祝日の日付･曜日を計算 ( 振替休日,国民の休日を除く )
+        """ 日付固定の祝日、変動の祝日の日付・曜日を計算
+            * 施行日：1948-07-20
 
         :param  int year
         :return list
         """
         holidays = []
         try:
-            for hid, month, day, kbn, name in self.HOLIDAYS:
-                if kbn > 7:
+            for hid, month, day, kbn, year_s, year_e, name in lcst.HOLIDAY:
+                if kbn > 7 or year < year_s or year > year_e:
                     continue
                 if kbn == 0:  # 月日が既定のもの
                     jd = self.__gc2jd(year, month, day) + self.JST_D
@@ -137,12 +122,16 @@ class JplHoliday:
         """ 国民の休日計算
             ( 「国民の祝日」で前後を挟まれた「国民の祝日」でない日 )
             ( 年またぎは考慮していない(今のところ不要) )
+            * 施行日：1985-12-27
 
         :param  list holiday_0: 変動の祝日の日付／曜日
         :return list
         """
         holidays = []
         try:
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 90][0]
+            if holiday_0[0][0] < y_min:
+                return []
             for i in range(len(holiday_0) - 1):
                 y_0, m_0, d_0 = holiday_0[i    ][0:3]
                 y_1, m_1, d_1 = holiday_0[i + 1][0:3]
@@ -161,14 +150,21 @@ class JplHoliday:
         """ 振替休日計算
             ( 「国民の祝日」が日曜日に当たるときは、
               その日後においてその日に最も近い「国民の祝日」でない日 )
+            * 施行日：1973-04-12
 
         :param  list holiday_0: 変動の祝日の日付／曜日
         :return list
         """
         holidays = []
         try:
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
+            if holiday_0[0][0] < y_min:
+                return []
             for i in range(len(holiday_0)):
                 y, m, d = holiday_0[i][0:3]
+                if y == 1973:
+                    if m < 4 or (m == 4 and d < 12):
+                        continue
                 jd = self.__gc2jd(y, m, d)
                 yobi = self.__yobi(jd)
                 if yobi != 0:
