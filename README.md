@@ -19,26 +19,8 @@ DE430 バイナリデータ(`JPLEPH`)を同じディレクトリ内に配置し�
 
 ### 定数データ等の生成について
 
-* 二十四節気、月の朔望の正確な日時は、都度ループ処理による近似計算が必要であるため、予め計算しておいたデータを使用することにしている。
-* その他のデータも合わせ、以下のような手順で生成している。
-* 二十四節気、月の朔望の定数は、以下の 2-11, 2-12 で生成したものを使用している。
-
-1. DB 生成（権限等も適切に設定する）
-  1-1. Database (with `db_script/create_db.sql`)
-  1-2. Table    (with `db_script/create_tbl.sql`)
-2. カレンダ生成
-  2-1.  `jpl_kokei.py 1899 2100`
-  2-2.  `jpl_sekki_24.py 1899 2100`
-  2-3.  `jpl_moon.py 1899 2100`
-  2-4.  `jpl_zassetsu.py 1900 2099` (depend on `calendar`.`dat_kokeis`)
-  2-5.  `jpl_holiday.py 1900 2099`  (depend on `calendar`.`dat_sekki24s`)
-  2-6.  `jpl_etc.py 1900 2099`      (depend on `calendar`.`dat_moons`)
-  2-7.  `jpl_oc.py 1900 2099`       (depend on `calendar`.`dat_sekki24s`, `calendar`.`dat_moons`)
-  2-8.  `jpl_db.py 1900 2099`       (depend on all of the above)
-  2-9.  `jpl_csv.py 1900 2099`      (depend on `calendar`.`dat_calenars`)
-  2-10. `jpl_csv_saku`
-  2-11. `jpl_csv_sekki_24`
-  2-12. `jpl_cal.py`
+* 二十四節気、月の朔望の正確な日時は、都度ループ処理による近似計算が必要であるため、別途計算しておいたデータを使用することにしている。（`lib` ディレクトリ内の `const_saku.py`, `const_sekki_24.py`）
+* 二十四節気、月の朔望の正確な日時等を予め計算するスクリプトも作成しているが、ここでは非公開とする。
 
 ---
 
