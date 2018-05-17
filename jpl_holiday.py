@@ -24,8 +24,8 @@ class JplHoliday:
     JST_D        = 0.375
     DATABASE     = "calendar"
     HOSTNAME     = "127.0.0.1"
-    USERNAME     = "masaru"
-    PASSWORD     = "MkMk*/7621"
+    USERNAME     = "******"
+    PASSWORD     = "**********"
     REG          = False  # DB 登録も行う場合は True
 
     def __init__(self):
