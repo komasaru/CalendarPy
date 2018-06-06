@@ -169,6 +169,7 @@ class EphJpl:
                 self.__get_ipt(f)     # IPT
                 self.__get_numde(f)   # NUMDE
                 self.__get_ipt_13(f)  # IPT
+                self.__get_cnam_2(f)  # CNAM(>400)
                 self.__get_cval(f)    # CVAL
                 self.__get_coeff(f)   # 係数取得
             self.__get_jdepoc()       # JDEPOC
@@ -332,6 +333,24 @@ class EphJpl:
                 l.append(a)
             self.ipts.append(l)
             self.pos += len_rec * 3
+        except Exception as e:
+            raise
+
+    def __get_cnam_2(self, f):
+        """ CNAM（定数名）取得
+            - 6 byte * 400
+            - ASCII文字列(後続のnull文字やスペースを削除)
+            - self.cnams に追加
+
+        :param file_object f
+        """
+        len_rec = 6
+        try:
+            for i in range(self.ncon - 400):
+                f.seek(self.pos + len_rec * i)
+                a = struct.unpack(str(len_rec) + "s", f.read(len_rec))[0]
+                self.cnams.append(a.decode("utf-8").rstrip())
+            self.pos += len_rec * 400
         except Exception as e:
             raise
 
