@@ -303,12 +303,15 @@ class EphSunMoon:
         :return string: 99 h 99 m 99.999 s
         """
         try:
+            pm  = "-" if hour < 0 else " "
+            if hour < 0:
+                hour *= -1
             h   = int(hour)
             h_r = hour - h
             m   = int(h_r * 60)
             m_r = h_r * 60 - m
             s   = m_r * 60
-            return " {:02d} h {:02d} m {:06.3f} s".format(h, m, s)
+            return " {:>3s} h {:02d} m {:06.3f} s".format(pm + str(h), m, s)
         except Exception as e:
             raise
 
@@ -327,7 +330,7 @@ class EphSunMoon:
             m   = int(d_r * 60)
             m_r = d_r * 60 - m
             s   = m_r * 60
-            return "{:3s} ° {:02d} ′ {:06.3f} ″".format(pm + str(d), m, s)
+            return "{:>4s} ° {:02d} ′ {:06.3f} ″".format(pm + str(d), m, s)
         except Exception as e:
             raise
 
