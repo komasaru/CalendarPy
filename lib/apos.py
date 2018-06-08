@@ -3,6 +3,7 @@ Class for apparent position of Sun/Moon.
 
   date          name            version
   2018.05.01    mk-mode.com     1.00 新規作成
+  2018.06.08    mk-mode.com     1.01 視半径／（地平）視差の計算処理を追加
 
 Copyright(C) 2018 mk-mode.com All Rights Reserved.
 """
@@ -38,9 +39,21 @@ class Apos:
             self.icrs_2[k] = self.__get_icrs(v, self.jd_tdb)
         # === 時刻 t2(= TDB) における地球と太陽・月の距離
         self.r_e = self.__get_r_e()
+        # === 太陽／月／地球の半径取得
+        de = ljpl.EphJpl(self.file_bin, 11, 3, self.jd_tdb)
+        self.asun = de.cvals[de.cnams.index("ASUN")]
+        self.am   = de.cvals[de.cnams.index("AM")]
+        self.re   = de.cvals[de.cnams.index("RE")]
 
     def sun(self):
-        """ Computation of Sun position """
+        """ Computation of Sun position
+
+        :return list: [
+                          [視赤経, 視赤緯, 地心距離],
+                          [視黄経, 視黄緯, 地心距離],
+                          [視半径, 視差]
+                      ]
+        """
         try:
             # === 太陽が光を発した時刻 t1(JD) の計算
             t_1_jd = self.__calc_t1("sun", self.tdb)
@@ -61,12 +74,24 @@ class Apos:
             eq_pol_s, eq_r = lcd.rect2pol(pos_sun_bpn)
             ec_rect_s      = lcd.rect_eq2ec(pos_sun_bpn, bpn.eps)
             ec_pol_s, ec_r = lcd.rect2pol(ec_rect_s)
-            return [eq_pol_s + [eq_r], ec_pol_s +[ec_r]]
+            # === 視半径／（地平）視差計算
+            radius = math.asin(self.asun / (eq_r * lcst.AU / 1000))
+            radius *= 180 / math.pi * 3600
+            parallax = math.asin(self.re / (eq_r * lcst.AU / 1000))
+            parallax *= 180 / math.pi * 3600
+            return [eq_pol_s + [eq_r], ec_pol_s + [ec_r], [radius, parallax]]
         except Exception as e:
             raise
 
     def moon(self):
-        """ Computation of Moon position """
+        """ Computation of Moon position
+
+        :return list: [
+                          [視赤経, 視赤緯, 地心距離],
+                          [視黄経, 視黄緯, 地心距離],
+                          [視半径, 視差]
+                      ]
+        """
         try:
             pass
             # === 月が光を発した時刻 t1(jd) の計算
@@ -88,7 +113,12 @@ class Apos:
             eq_pol_m, eq_r = lcd.rect2pol(pos_moon_bpn)
             ec_rect_m      = lcd.rect_eq2ec(pos_moon_bpn, bpn.eps)
             ec_pol_m, ec_r = lcd.rect2pol(ec_rect_m)
-            return [eq_pol_m + [eq_r], ec_pol_m + [ec_r]]
+            # === 視半径／（地平）視差計算
+            radius = math.asin(self.am / (eq_r * lcst.AU / 1000))
+            radius *= 180 / math.pi * 3600
+            parallax = math.asin(self.re / (eq_r * lcst.AU / 1000))
+            parallax *= 180 / math.pi * 3600
+            return [eq_pol_m + [eq_r], ec_pol_m + [ec_r], [radius, parallax]]
         except Exception as e:
             raise
 

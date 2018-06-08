@@ -5,6 +5,7 @@
 
   date          name            version
   2018.05.03    mk-mode.com     1.00 新規作成
+  2018.06.08    mk-mode.com     1.01 視半径／（地平）視差を追加
 
 Copyright(C) 2018 mk-mode.com All Rights Reserved.
 ----------------------------------------------------------------------
@@ -89,7 +90,15 @@ class ApparentSunMoonJpl:
                 "  = {:.2f} km\n"
                 "* 距離：月\n"
                 "  = {:.10f} AU\n"
-                "  = {:.2f} km"
+                "  = {:.2f} km\n"
+                "* 視半径：太陽\n"
+                "  = {:.2f} ″\n"
+                "* 視半径：月\n"
+                "  = {:.2f} ″\n"
+                "* （地平）視差：太陽\n"
+                "  = {:.2f} ″\n"
+                "* （地平）視差：月\n"
+                "  = {:.2f} ″"
             ).format(
                 self.jst.strftime("%Y-%m-%d %H:%M:%S.%f"),
                 self.utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
@@ -112,7 +121,11 @@ class ApparentSunMoonJpl:
                 self.sun[0][2],
                 self.sun[0][2] * AU / 1000,
                 self.moon[0][2],
-                self.moon[0][2] * AU / 1000
+                self.moon[0][2] * AU / 1000,
+                self.sun[2][0],
+                self.moon[2][0],
+                self.sun[2][1],
+                self.moon[2][1]
             ))
         except Exception as e:
             raise
