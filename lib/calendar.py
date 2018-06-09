@@ -520,20 +520,21 @@ class Calendar:
         """
         zassetsus = []
         try:
+            utc = jst - timedelta(hours=9)
             jd = ltm.gc2jd(jst)
 
             # 計算対象日の太陽の黄経
-            lmd_today = self.__comp_kokei_sun(jst)
+            lmd_today = self.__comp_kokei_sun(utc)
             # 計算対象日の翌日の太陽の黄経
-            lmd_tomorrow = self.__comp_kokei_sun(jst + timedelta(days=1))
+            lmd_tomorrow = self.__comp_kokei_sun(utc + timedelta(days=1))
             # 計算対象日の5日前の太陽の黄経(社日計算用)
-            lmd_before_5 = self.__comp_kokei_sun(jst - timedelta(days=5))
+            lmd_before_5 = self.__comp_kokei_sun(utc - timedelta(days=5))
             # 計算対象日の4日前の太陽の黄経(社日計算用)
-            lmd_before_4 = self.__comp_kokei_sun(jst - timedelta(days=4))
+            lmd_before_4 = self.__comp_kokei_sun(utc - timedelta(days=4))
             # 計算対象日の5日後の太陽の黄経(社日計算用)
-            lmd_after_5  = self.__comp_kokei_sun(jst + timedelta(days=5))
+            lmd_after_5  = self.__comp_kokei_sun(utc + timedelta(days=5))
             # 計算対象日の6日後の太陽の黄経(社日計算用)
-            lmd_after_6  = self.__comp_kokei_sun(jst + timedelta(days=6))
+            lmd_after_6  = self.__comp_kokei_sun(utc + timedelta(days=6))
             # 太陽の黄経の整数部分( 土用, 入梅, 半夏生 計算用 )
             lmd_today0    = int(lmd_today)
             lmd_tomorrow0 = int(lmd_tomorrow)
