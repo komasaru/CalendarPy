@@ -25,7 +25,8 @@ class GenCoeffsList:
         [2015, "text/na15-data.txt"],
         [2016, "text/na16-data.txt"],
         [2017, "text/na17-data.txt"],
-        [2018, "text/na18-data.txt"]
+        [2018, "text/na18-data.txt"],
+        [2019, "text/na19-data.txt"]
     ]
     OUT_FILE = "consts.py"
 

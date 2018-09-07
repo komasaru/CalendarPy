@@ -25,7 +25,7 @@ import consts as cst
 class EphSunMoon:
     JST_UTC = 9  # JST - UTC
     MSG_ERR_1 = "[ERROR] Format: YYYYMMDD or YYYYMMDDHHMMSS"
-    MSG_ERR_2 = "[ERROR] It should be between 20080101090000 and 20190101085959."
+    MSG_ERR_2 = "[ERROR] It should be between 20080101090000 and 20200101085959."
     MSG_ERR_3 = "[ERROR] Invalid date!"
     DIVS = {
         "SUN_RA":   cst.SUN_RA,
@@ -39,7 +39,7 @@ class EphSunMoon:
     }
     DELTA_T = {
         2008: 65, 2009: 66, 2010: 66, 2011: 67, 2012: 67, 2013: 67,
-        2014: 67, 2015: 68, 2016: 68, 2017: 68, 2018: 69
+        2014: 67, 2015: 68, 2016: 68, 2017: 68, 2018: 69, 2019:70
     }
 
     def __init__(self):
