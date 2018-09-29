@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.6
+#! /usr/local/bin/python3
 """
 JPLEPH(JPL の DE430 バイナリデータ)読み込み、座標（位置・速度）を計算
 
@@ -68,7 +68,7 @@ class EphemerisJpl:
         "Neptune", "Pluto", "Moon", "Sun", "Solar system Barycenter",
         "Earth-Moon barycenter", "Earth Nutations", "Lunar mantle Librations"
     ]
-    FILE_BIN = "/home/masaru/src/calendar_py/JPLEPH"
+    FILE_BIN = "/path/to/JPLEPH"
     BARY = True
     KM   = False
 

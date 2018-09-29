@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.6
+#! /usr/local/bin/python3
 """
 地球自転速度の補正値 delta T(ΔT)の計算
 : [NASA - Polynomial Expressions for Delta T]

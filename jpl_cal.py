@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.6
+#! /usr/local/bin/python3
 """
 カレンダー
 : 高野氏のプログラムのアルゴリズムを使用。
@@ -22,7 +22,7 @@ from lib import calendar as lcal
 
 class JplCal:
     USAGE    = "[USAGE] ./jpl_cal.py [YYYYMMDD]"
-    BIN_PATH = "/home/masaru/src/calendar_py/JPLEPH"
+    BIN_PATH = "/path/to/JPLEPH"
 
     def __init__(self):
         self.__get_arg()

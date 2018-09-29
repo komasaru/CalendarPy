@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.6
+#! /usr/local/bin/python3
 """
 章動の計算
 : IAU2000A 章動理論(MHB2000, IERS2003)による

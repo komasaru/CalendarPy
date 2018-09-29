@@ -1,4 +1,4 @@
-#! /usr/local/bin/python3.6
+#! /usr/local/bin/python3
 """
 太陽・月の視位置計算
 * JPLEPH(JPL の DE430 バイナリデータ)を読み込み、視位置を計算する
@@ -25,7 +25,7 @@ from lib.const import AU  # 1天文単位 (m)
 
 class ApparentSunMoonJpl:
     USAGE    = "[USAGE] ./apparent_sun_moon_jpl.py [YYYYMMDD|YYYYMMDDHHMMSS|YYYYMMDDHHMMSSffffff]"
-    FILE_BIN = "/home/masaru/src/calendar_py/JPLEPH"
+    FILE_BIN = "/path/to/JPLEPH"
 
     def __init__(self):
         self.jst = self.__get_arg()
