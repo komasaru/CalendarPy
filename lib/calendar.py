@@ -201,11 +201,11 @@ class Calendar:
         try:
             # 日付固定の祝日、変動の祝日の日付･曜日を計算
             holiday_0 = self.__comp_holiday_0(year)
-            # 国民の休日計算
-            holiday_1 = self.__comp_holiday_1(holiday_0)
             # 振替休日計算
+            holiday_1 = self.__comp_holiday_1(holiday_0)
+            # 国民の休日計算
             holiday_2 = self.__comp_holiday_2(holiday_0)
-            return sorted(holiday_0 + holiday_1 + holiday_2)
+            return self.__merge_sort(holiday_0, holiday_1, holiday_2)
         except Exception as e:
             raise
 
@@ -253,34 +253,6 @@ class Calendar:
             raise
 
     def __comp_holiday_1(self, holiday_0):
-        """ 国民の休日計算
-            ( 「国民の祝日」で挟まれた「国民の祝日」でない日 )
-            ( 年またぎは考慮していない(今のところ不要) )
-            * 施行日：1985-12-27
-
-        :param  list holiday_0: 変動の祝日の日付・曜日の一覧
-        :return list          : 国民の休日の一覧
-        """
-        holidays = []
-        try:
-            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
-            if holiday_0[0][0] < y_min:
-                return []
-            for i in range(len(holiday_0) - 1):
-                y_0, m_0, d_0 = holiday_0[i    ][0:3]
-                y_1, m_1, d_1 = holiday_0[i + 1][0:3]
-                jd_0 = ltm.gc2jd(datetime(y_0, m_0, d_0))
-                jd_1 = ltm.gc2jd(datetime(y_1, m_1, d_1))
-                if jd_0 + 2 == jd_1:
-                    jd = jd_0 + 1
-                    yobi = self.__yobi(jd)
-                    y, m, d = ltm.jd2gc(jd)[0:3]
-                    holidays.append([y, m, d, 91])
-            return holidays
-        except Exception as e:
-            raise
-
-    def __comp_holiday_2(self, holiday_0):
         """ 振替休日計算
             ( 「国民の祝日」が日曜日に当たるときは、
               その日後においてその日に最も近い「国民の祝日」でない日 )
@@ -329,6 +301,34 @@ class Calendar:
                                 holidays.append(
                                     [next_y, next_m, next_d, 90]
                                 )
+            return holidays
+        except Exception as e:
+            raise
+
+    def __comp_holiday_2(self, holiday_0):
+        """ 国民の休日計算
+            ( 「国民の祝日」で挟まれた「国民の祝日」でない日 )
+            ( 年またぎは考慮していない(今のところ不要) )
+            * 施行日：1985-12-27
+
+        :param  list holiday_0: 変動の祝日の日付・曜日の一覧
+        :return list          : 国民の休日の一覧
+        """
+        holidays = []
+        try:
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
+            if holiday_0[0][0] < y_min:
+                return []
+            for i in range(len(holiday_0) - 1):
+                y_0, m_0, d_0 = holiday_0[i    ][0:3]
+                y_1, m_1, d_1 = holiday_0[i + 1][0:3]
+                jd_0 = ltm.gc2jd(datetime(y_0, m_0, d_0))
+                jd_1 = ltm.gc2jd(datetime(y_1, m_1, d_1))
+                if jd_0 + 2 == jd_1:
+                    jd = jd_0 + 1
+                    yobi = self.__yobi(jd)
+                    y, m, d = ltm.jd2gc(jd)[0:3]
+                    holidays.append([y, m, d, 91])
             return holidays
         except Exception as e:
             raise
@@ -463,6 +463,30 @@ class Calendar:
             if code_t == 99:
                 return 99
             return 91  # 国民の休日
+        except Exception as e:
+            raise
+
+    def __merge_sort(self, hol_0, hol_1, hol_2):
+        """ 年間休日休日のマージ＆ソート
+            * さらに、「振替休日」と「国民の休日」がダブる場合は、
+              「振替休日」を優先
+
+        :param  list hol_0: 変動の祝日の日付／曜日
+        :param  list hol_1: 振替休日
+        :param  list hol_2: 国民の休日
+        """
+        try:
+            data = []
+            data_src = sorted(hol_0 + hol_1 + hol_2)
+            for i, d in enumerate(data_src):
+                if i == 0:
+                    data.append(d)
+                    continue
+                if data_src[i - 1][0:3] == d[0:3]:
+                    if data_src[i - 1][3] == 90 and d[3] == 91:
+                        continue
+                data.append(d)
+            return data
         except Exception as e:
             raise
 
