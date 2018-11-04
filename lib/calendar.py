@@ -263,7 +263,7 @@ class Calendar:
         """
         holidays = []
         try:
-            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 90][0]
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
             if holiday_0[0][0] < y_min:
                 return []
             for i in range(len(holiday_0) - 1):
@@ -275,7 +275,7 @@ class Calendar:
                     jd = jd_0 + 1
                     yobi = self.__yobi(jd)
                     y, m, d = ltm.jd2gc(jd)[0:3]
-                    holidays.append([y, m, d, 90])
+                    holidays.append([y, m, d, 91])
             return holidays
         except Exception as e:
             raise
@@ -291,7 +291,7 @@ class Calendar:
         """
         holidays = []
         try:
-            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 90][0]
             if holiday_0[0][0] < y_min:
                 return []
             for i in range(len(holiday_0)):
@@ -307,7 +307,7 @@ class Calendar:
                 next_yobi = self.__yobi(next_jd)
                 if i == len(holiday_0) - 1:
                     next_y, next_m, next_d = ltm.jd2gc(next_jd)[0:3]
-                    holidays.append([next_y, next_m, next_d, 91])
+                    holidays.append([next_y, next_m, next_d, 90])
                 else:
                     flg_furikae = 0
                     plus_day = 1
@@ -327,7 +327,7 @@ class Calendar:
                                 next_y, next_m, next_d \
                                     = ltm.jd2gc(next_jd)[0:3]
                                 holidays.append(
-                                    [next_y, next_m, next_d, 91]
+                                    [next_y, next_m, next_d, 90]
                                 )
             return holidays
         except Exception as e:
@@ -357,12 +357,12 @@ class Calendar:
             code = self.__holiday_n(jst)
             if code != 99:
                 return code
-            # 国民の休日？
-            code = self.__holiday_k(jst)
-            if code != 99:
-                return code
             # 振替休日？
             code = self.__holiday_f(jst)
+            if code != 99:
+                return code
+            # 国民の休日？
+            code = self.__holiday_k(jst)
             if code != 99:
                 return code
             return 99
@@ -417,6 +417,30 @@ class Calendar:
         except Exception as e:
             raise
 
+    def __holiday_f(self, jst):
+        """ 振替休日計算
+            ( 「国民の祝日」が日曜日に当たるときは、
+              その日後においてその日に最も近い「国民の祝日」でない日 )
+            * 施行日：1973-04-12
+
+        :param  datetime jst: JST（日本標準時）
+        :return int         : 休日コード（振替休日=90, その他=99）
+        """
+        try:
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 90][0]
+            if jst.year < y_min:
+                return 99
+            jst_y = jst - timedelta(days=1)
+            code_y = self.__holiday_n(jst_y)
+            while code_y < 90:
+                if self.__yobi(ltm.gc2jd(jst_y)) == 0:
+                    return 90  # 振替休日
+                jst_y -= timedelta(days=1)
+                code_y = self.__holiday_n(jst_y)
+            return 99
+        except Exception as e:
+            raise
+
     def __holiday_k(self, jst):
         """ 国民の休日を計算
             ( 「国民の祝日」で挟まれた「国民の祝日」でない日 )
@@ -424,10 +448,10 @@ class Calendar:
             * 施行日：1985-12-27
 
         :param  datetime jst: JST（日本標準時）
-        :return int         : 休日コード（国民の休日=90, その他=99）
+        :return int         : 休日コード（国民の休日=91, その他=99）
         """
         try:
-            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 90][0]
+            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
             if jst.year < y_min:
                 return 99
             # 前日
@@ -438,31 +462,7 @@ class Calendar:
             code_t = self.__holiday_n(jst + timedelta(days=1))
             if code_t == 99:
                 return 99
-            return 90  # 国民の休日
-        except Exception as e:
-            raise
-
-    def __holiday_f(self, jst):
-        """ 振替休日計算
-            ( 「国民の祝日」が日曜日に当たるときは、
-              その日後においてその日に最も近い「国民の祝日」でない日 )
-            * 施行日：1973-04-12
-
-        :param  datetime jst: JST（日本標準時）
-        :return int         : 休日コード（振替休日=91, その他=99）
-        """
-        try:
-            y_min = [h[4] for h in lcst.HOLIDAY if h[0] == 91][0]
-            if jst.year < y_min:
-                return 99
-            jst_y = jst - timedelta(days=1)
-            code_y = self.__holiday_n(jst_y)
-            while code_y < 90:
-                if self.__yobi(ltm.gc2jd(jst_y)) == 0:
-                    return 91  # 振替休日
-                jst_y -= timedelta(days=1)
-                code_y = self.__holiday_n(jst_y)
-            return 99
+            return 91  # 国民の休日
         except Exception as e:
             raise
 
