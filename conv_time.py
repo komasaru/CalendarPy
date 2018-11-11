@@ -4,6 +4,7 @@
 
   date          name            version
   2018.04.26    mk-mode         1.00 新規作成
+  2018.11.11    mk-mode         1.01 ΔTの計算を改良(DUT1 加味etc.)
 
 Copyright(C) 2018 mk-mode.com All Rights Reserved.
 ---
@@ -54,7 +55,8 @@ class ConvTime:
             self.t       = ltm.jd2jc(self.jd)
             self.utc_tai = ltm.utc2utc_tai(self.utc)
             self.dut1    = ltm.utc2dut1(self.utc)
-            odt          = ldt.DeltaT(self.utc.year, self.utc.month)
+            odt          = ldt.DeltaT(self.utc.year, self.utc.month,
+                                      self.utc_tai, self.dut1)
             self.dt      = odt.delta_t()
             self.tai     = ltm.utc2tai(self.utc, self.utc_tai)
             self.ut1     = ltm.utc2ut1(self.utc, self.dut1)

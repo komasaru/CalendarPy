@@ -9,7 +9,7 @@ import const as lcst
 
 
 class DeltaT:
-    def __init__(self, year, month):
+    def __init__(self, year, month, utc_tai, dut1):
         """ Initialization
 
         :param int year
@@ -17,6 +17,8 @@ class DeltaT:
         """
         self.year, self.month = year, month
         self.y = year + (month - 0.5) / 12
+        self.utc_tai = utc_tai
+        self.dut1 = dut1
 
     def delta_t(self):
         """ Delta-T calculation """
@@ -223,40 +225,15 @@ class DeltaT:
         utc = datetime(self.year, self.month, 1)
         t = self.y - 1975
         try:
-            if utc < datetime(1972, 1, 1):
+            # うるう秒実施より前は NASA 提供の略算式で
+            if self.utc_tai == 0:
                 return 45.45       \
                     + ( 1.067      \
                     + (-1.0 / 260  \
                     + (-1.0 / 718) \
                     * t) * t) * t
-            elif utc < datetime(1972, 7, 1):
-                return lcst.TT_TAI + 10
-            elif utc < datetime(1973, 1, 1):
-                return lcst.TT_TAI + 11
-            elif utc < datetime(1974, 1, 1):
-                return lcst.TT_TAI + 12
-            elif utc < datetime(1975, 1, 1):
-                return lcst.TT_TAI + 13
-            elif utc < datetime(1976, 1, 1):
-                return lcst.TT_TAI + 14
-            elif utc < datetime(1977, 1, 1):
-                return lcst.TT_TAI + 15
-            elif utc < datetime(1978, 1, 1):
-                return lcst.TT_TAI + 16
-            elif utc < datetime(1979, 1, 1):
-                return lcst.TT_TAI + 17
-            elif utc < datetime(1980, 1, 1):
-                return lcst.TT_TAI + 18
-            elif utc < datetime(1981, 7, 1):
-                return lcst.TT_TAI + 19
-            elif utc < datetime(1982, 7, 1):
-                return lcst.TT_TAI + 20
-            elif utc < datetime(1983, 7, 1):
-                return lcst.TT_TAI + 21
-            elif utc < datetime(1985, 7, 1):
-                return lcst.TT_TAI + 22
-            elif utc < datetime(1988, 1, 1):
-                return lcst.TT_TAI + 23
+            else:
+                return lcst.TT_TAI - self.utc_tai - self.dut1
         except Exception as e:
             raise
 
@@ -268,7 +245,7 @@ class DeltaT:
         utc = datetime(self.year, self.month, 1)
         t = self.y - 2000
         try:
-            # 以下の7行は NASA 提供の略算式
+            # 以下の7行は NASA 提供の略算式を使用する場合
             #return 63.86           \
             #    + ( 0.3345         \
             #    + (-0.060374       \
@@ -276,26 +253,7 @@ class DeltaT:
             #    + ( 0.000651814    \
             #    + ( 0.00002373599) \
             #    * t) * t) * t) * t) * t
-            if utc < datetime(1988, 1, 1):
-                return lcst.TT_TAI + 23
-            elif utc < datetime(1990, 1, 1):
-                return lcst.TT_TAI + 24
-            elif utc < datetime(1991, 1, 1):
-                return lcst.TT_TAI + 25
-            elif utc < datetime(1992, 7, 1):
-                return lcst.TT_TAI + 26
-            elif utc < datetime(1993, 7, 1):
-                return lcst.TT_TAI + 27
-            elif utc < datetime(1994, 7, 1):
-                return lcst.TT_TAI + 28
-            elif utc < datetime(1996, 1, 1):
-                return lcst.TT_TAI + 29
-            elif utc < datetime(1997, 7, 1):
-                return lcst.TT_TAI + 30
-            elif utc < datetime(1999, 1, 1):
-                return lcst.TT_TAI + 31
-            elif utc < datetime(2006, 1, 1):
-                return lcst.TT_TAI + 32
+            return lcst.TT_TAI - self.utc_tai - self.dut1
         except Exception as e:
             raise
 
@@ -307,25 +265,14 @@ class DeltaT:
         utc = datetime(self.year, self.month, 1)
         t = self.y - 2000
         try:
-            if utc < datetime(2006, 1, 1):
-                return lcst.TT_TAI + 32
-            elif utc < datetime(2009, 1, 1):
-                return lcst.TT_TAI + 33
-            elif utc < datetime(2012, 7, 1):
-                return lcst.TT_TAI + 34
-            elif utc < datetime(2015, 7, 1):
-                return lcst.TT_TAI + 35
-            elif utc < datetime(2017, 1, 1):
-                return lcst.TT_TAI + 36
-            elif utc < datetime(2019, 1, 1):
-                # 第28回うるう秒実施までの暫定措置
-                return lcst.TT_TAI + 37
-            else:
-                # 2019年1月以降は NASA 提供の略算式で
+            # うるう秒未定部分は NASA 提供の略算式で
+            if self.utc_tai == 0:
                 return 62.92      \
                     + ( 0.32217   \
                     + ( 0.005589) \
                     * t) * t
+            else:
+                return lcst.TT_TAI - self.utc_tai - self.dut1
         except Exception as e:
             raise
 
