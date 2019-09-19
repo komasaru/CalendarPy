@@ -551,12 +551,8 @@ class Calendar:
             lmd_today = self.__comp_kokei_sun(utc)
             # 計算対象日の翌日の太陽の黄経
             lmd_tomorrow = self.__comp_kokei_sun(utc + timedelta(days=1))
-            # 計算対象日の5日前の太陽の黄経(社日計算用)
-            lmd_before_5 = self.__comp_kokei_sun(utc - timedelta(days=5))
             # 計算対象日の4日前の太陽の黄経(社日計算用)
             lmd_before_4 = self.__comp_kokei_sun(utc - timedelta(days=4))
-            # 計算対象日の5日後の太陽の黄経(社日計算用)
-            lmd_after_5  = self.__comp_kokei_sun(utc + timedelta(days=5))
             # 計算対象日の6日後の太陽の黄経(社日計算用)
             lmd_after_6  = self.__comp_kokei_sun(utc + timedelta(days=6))
             # 太陽の黄経の整数部分( 土用, 入梅, 半夏生 計算用 )
@@ -598,16 +594,7 @@ class Calendar:
                         break
                 # [ 5日後 ]
                 if self.__sekki_24(jst + timedelta(days=5)) == 0:  # 春分
-                    # 春分の日の黄経(太陽)と翌日の黄経(太陽)の中間点が
-                    # 0度(360度)以上なら、春分点が午前と判断
-                    if (lmd_after_5 + lmd_after_6 + 360) / 2 >= 360:
-                        zassetsus.append(4)
-                # [ 5日前 ]
-                if self.__sekki_24(jst - timedelta(days=5)) == 0:  # 春分
-                    # 春分の日の黄経(太陽)と翌日の黄経(太陽)の中間点が
-                    # 0度(360度)未満なら、春分点が午後と判断
-                    if (lmd_before_4 + lmd_before_5 + 360) / 2 < 360:
-                        zassetsus.append(4)
+                    zassetsus.append(4)
             # 5:土用入（春） ( 黄経(太陽) = 27度 )
             if lmd_today0 != lmd_tomorrow0 and \
                lmd_tomorrow0 == 27:
@@ -664,16 +651,7 @@ class Calendar:
                         break
                 # [ 5日後 ]
                 if self.__sekki_24(jst + timedelta(days=5)) == 180:  # 秋分
-                    # 秋分の日の黄経(太陽)と翌日の黄経(太陽)の中間点が
-                    # 180度以上なら、秋分点が午前と判断
-                    if (lmd_after_5 + lmd_after_6) / 2 >= 180:
-                        zassetsus.append(15)
-                # [ 5日前 ]
-                if self.__sekki_24(jst - timedelta(days=5)) == 180:  # 秋分
-                    # 秋分の日の黄経(太陽)と翌日の黄経(太陽)の中間点が
-                    # 180度未満なら、秋分点が午後と判断
-                    if (lmd_before_4 + lmd_before_5) / 2 < 180:
-                        zassetsus.append(15)
+                    zassetsus.append(15)
             # 16:土用入（秋） ( 黄経(太陽) = 207度 )
             if lmd_today0 != lmd_tomorrow0 and \
                lmd_tomorrow0 == 207:
